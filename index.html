@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>灵蛋所 · 洛克王国孵蛋查询</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   DESIGN SYSTEM — DARK GOLD / 暗金
+   ============================================ */
+:root {
+  --gold-100: #faf6ed;
+  --gold-200: #f0e4c8;
+  --gold-300: #dfc792;
+  --gold-400: #c9a84c;
+  --gold-500: #b8912e;
+  --gold-600: #9a7628;
+  --gold-700: #7a5d20;
+  --gold-800: #4a3712;
+  --ink:      #0a0a0a;
+  --ink-100:  #f5f3ef;
+  --ink-90:   rgba(255,255,255,0.90);
+  --ink-80:   rgba(255,255,255,0.80);
+  --ink-70:   rgba(255,255,255,0.70);
+  --ink-60:   rgba(255,255,255,0.55);
+  --ink-40:   rgba(255,255,255,0.35);
+  --ink-20:   rgba(255,255,255,0.12);
+  --ink-10:   rgba(255,255,255,0.06);
+  --surface:      #0a0a0a;
+  --surface-alt:  #0e0e0e;
+  --surface-card: #111111;
+  --surface-card-hover: #181818;
+  --surface-tile: #0d0d0d;
+  --surface-black: #000000;
+  --border: rgba(201, 168, 76, 0.12);
+  --border-strong: rgba(201, 168, 76, 0.30);
+  --border-glow: rgba(201, 168, 76, 0.50);
+  --font-display: 'Playfair Display', 'Times New Roman', serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --space-xs: 8px;
+  --space-sm: 16px;
+  --space-md: 24px;
+  --space-lg: 40px;
+  --space-xl: 64px;
+  --space-xxl: 96px;
+  --space-section: 100px;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-pill: 9999px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;font-size:16px;-webkit-font-smoothing:antialiased;}
+body{font-family:var(--font-body);background:var(--surface);color:var(--ink-80);line-height:1.6;overflow-x:hidden;}
+::selection{background:rgba(201,168,76,0.3);color:var(--gold-200);}
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--surface);}
+::-webkit-scrollbar-thumb{background:var(--gold-700);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--gold-600);}
+
+/* ============================================
+   GOLD ORB BACKGROUND
+   ============================================ */
+.gold-orb{position:fixed;top:-40vh;left:-20vw;width:80vw;height:80vw;border-radius:50%;background:radial-gradient(circle at 30% 30%, rgba(201,168,76,0.06) 0%, rgba(201,168,76,0.02) 40%, transparent 70%);pointer-events:none;z-index:0;transform:translate(var(--mx,0),var(--my,0));transition:transform 0.1s ease-out;}
+.gold-orb-2{position:fixed;bottom:-30vh;right:-20vw;width:70vw;height:70vw;border-radius:50%;background:radial-gradient(circle at 70% 70%, rgba(201,168,76,0.04) 0%, transparent 50%);pointer-events:none;z-index:0;transform:translate(var(--mx2,0),var(--my2,0));transition:transform 0.15s ease-out;}
+
+/* ============================================
+   GOLDEN SPARKLE CANVAS
+   ============================================ */
+#sparkleCanvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;}
+
+/* ============================================
+   SCROLL PROGRESS
+   ============================================ */
+.scroll-progress{position:fixed;top:0;left:0;width:0%;height:2px;background:linear-gradient(90deg,var(--gold-600),var(--gold-400),var(--gold-300));z-index:9999;transition:width 0.1s linear;}
+
+/* ============================================
+   NAV
+   ============================================ */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:0 var(--space-lg);height:56px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,10,10,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--ink-20);}
+.nav-logo{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:18px;color:var(--gold-400);text-decoration:none;letter-spacing:1px;}
+.nav-logo .logo-icon{width:28px;height:28px;border:1.5px solid var(--gold-400);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--gold-300);}
+.nav-links{display:flex;gap:var(--space-md);list-style:none;}
+.nav-links a{color:var(--ink-60);text-decoration:none;font-size:13px;font-weight:400;letter-spacing:0.3px;transition:color 0.3s;position:relative;}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--gold-400);transition:width 0.3s;}
+.nav-links a:hover{color:var(--gold-300);}
+.nav-links a:hover::after{width:100%;}
+
+/* ============================================
+   HERO
+   ============================================ */
+.hero{position:relative;z-index:2;min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px var(--space-md) 60px;}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border:1px solid var(--border);border-radius:var(--radius-pill);font-size:11px;color:var(--gold-400);letter-spacing:2px;text-transform:uppercase;margin-bottom:var(--space-md);font-weight:500;}
+.hero h1{font-family:var(--font-display);font-size:clamp(40px,6vw,72px);font-weight:700;color:var(--gold-100);line-height:1.1;letter-spacing:-0.02em;margin-bottom:var(--space-sm);position:relative;display:inline-block;}
+.hero h1 .gold-shimmer{background:linear-gradient(135deg, var(--gold-300) 0%, var(--gold-100) 30%, var(--gold-400) 60%, var(--gold-200) 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 4s ease-in-out infinite;}
+@keyframes shimmer{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
+.hero h1::after{content:'';position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--gold-400),transparent);}
+.hero .subtitle{font-size:clamp(15px,1.8vw,20px);color:var(--ink-60);max-width:560px;margin:var(--space-lg) auto 0;line-height:1.7;font-weight:300;letter-spacing:0.2px;}
+.hero .subtitle strong{color:var(--gold-300);font-weight:500;}
+
+/* ============================================
+   SECTION COMMON
+   ============================================ */
+.section{z-index:2;position:relative;padding:var(--space-section) var(--space-md);max-width:1200px;margin:0 auto;}
+.section-label{display:inline-flex;align-items:center;gap:8px;font-size:11px;color:var(--gold-500);letter-spacing:3px;text-transform:uppercase;font-weight:500;margin-bottom:var(--space-sm);}
+.section-label::before{content:'';width:24px;height:1px;background:var(--gold-600);}
+.section-title{font-family:var(--font-display);font-size:clamp(28px,3.5vw,42px);font-weight:700;color:var(--gold-100);margin-bottom:var(--space-sm);line-height:1.15;letter-spacing:-0.01em;}
+.section-desc{font-size:15px;color:var(--ink-60);max-width:580px;line-height:1.7;font-weight:300;}
+
+/* ============================================
+   QUERY SECTION
+   ============================================ */
+.query-section{position:relative;z-index:2;padding:60px var(--space-md);max-width:800px;margin:0 auto;}
+.query-card{background:var(--surface-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:var(--space-lg) var(--space-lg);transition:border-color 0.3s;}
+.query-card:focus-within{border-color:var(--border-strong);box-shadow:0 0 30px rgba(201,168,76,0.05);}
+.query-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-md);flex-wrap:wrap;gap:var(--space-sm);}
+.query-header h2{font-family:var(--font-display);font-size:22px;color:var(--gold-200);font-weight:600;}
+.query-templates{display:flex;gap:6px;flex-wrap:wrap;}
+.template-btn{padding:4px 14px;border:1px solid var(--border);border-radius:var(--radius-pill);background:transparent;color:var(--ink-60);font-size:12px;cursor:pointer;transition:all 0.3s;font-family:var(--font-body);}
+.template-btn:hover{border-color:var(--gold-500);color:var(--gold-300);background:rgba(201,168,76,0.06);}
+.template-btn.active{border-color:var(--gold-400);color:var(--gold-300);background:rgba(201,168,76,0.1);}
+.input-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-sm);margin-bottom:var(--space-sm);}
+.input-group{display:flex;flex-direction:column;gap:6px;}
+.input-group label{font-size:12px;color:var(--ink-60);letter-spacing:0.5px;font-weight:500;}
+.input-wrapper{position:relative;display:flex;align-items:center;}
+.input-wrapper input{width:100%;padding:12px 60px 12px 16px;background:var(--surface);border:1px solid var(--ink-20);border-radius:var(--radius-md);color:var(--ink-90);font-size:15px;font-family:var(--font-body);outline:none;transition:border-color 0.3s;}
+.input-wrapper input:focus{border-color:var(--gold-500);}
+.input-wrapper input::placeholder{color:var(--ink-40);}
+.input-unit{position:absolute;right:14px;color:var(--ink-40);font-size:13px;font-weight:400;pointer-events:none;}
+.hot-eggs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:var(--space-sm);}
+.hot-egg-btn{padding:4px 12px;border:1px solid var(--ink-20);border-radius:var(--radius-pill);background:transparent;color:var(--ink-40);font-size:11px;cursor:pointer;transition:all 0.3s;font-family:var(--font-body);}
+.hot-egg-btn:hover{border-color:var(--gold-600);color:var(--gold-400);background:rgba(201,168,76,0.04);}
+.hot-egg-btn .egg-icon{margin-right:4px;}
+.query-actions{display:flex;gap:var(--space-sm);margin-top:var(--space-md);}
+.query-btn{flex:1;padding:14px 28px;border:none;border-radius:var(--radius-md);background:linear-gradient(135deg,var(--gold-600),var(--gold-500));color:var(--ink-100);font-size:15px;font-weight:500;cursor:pointer;transition:all 0.3s;font-family:var(--font-body);letter-spacing:0.5px;position:relative;overflow:hidden;}
+.query-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent);transition:left 0.5s;}
+.query-btn:hover::before{left:100%;}
+.query-btn:hover{transform:translateY(-1px);box-shadow:0 8px 30px rgba(201,168,76,0.2);}
+.query-btn:active{transform:translateY(0);}
+.query-btn-secondary{padding:14px 24px;border:1px solid var(--border);border-radius:var(--radius-md);background:transparent;color:var(--ink-60);font-size:14px;cursor:pointer;transition:all 0.3s;font-family:var(--font-body);}
+.query-btn-secondary:hover{border-color:var(--gold-500);color:var(--gold-300);}
+.query-note{margin-top:var(--space-sm);font-size:12px;color:var(--ink-40);text-align:center;}
+.query-note a{color:var(--gold-500);text-decoration:none;border-bottom:1px dotted var(--gold-600);}
+
+/* ============================================
+   HOT QUERIES BAR
+   ============================================ */
+.hot-queries-bar{position:relative;z-index:2;max-width:800px;margin:var(--space-md) auto 0;padding:0 var(--space-md);}
+.hot-queries-bar .hq-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-sm);}
+.hot-queries-bar .hq-header span{font-size:12px;color:var(--ink-50,var(--ink-60));letter-spacing:0.5px;}
+.hot-queries-bar .hq-header a{font-size:12px;color:var(--gold-500);text-decoration:none;}
+.hot-queries-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px;}
+.hot-query-item{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--ink-20);border-radius:var(--radius-sm);background:transparent;cursor:pointer;transition:all 0.3s;color:var(--ink-60);font-size:12px;font-family:var(--font-body);}
+.hot-query-item:hover{border-color:var(--gold-600);color:var(--gold-300);background:rgba(201,168,76,0.04);}
+.hot-query-item .hq-dot{width:6px;height:6px;border-radius:50%;background:var(--gold-500);flex-shrink:0;}
+
+/* ============================================
+   RESULTS
+   ============================================ */
+.results-section{position:relative;z-index:2;padding:var(--space-section) var(--space-md);max-width:1200px;margin:0 auto;}
+.results-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:var(--space-lg);flex-wrap:wrap;gap:var(--space-sm);}
+.results-header .rh-left h2{font-family:var(--font-display);font-size:28px;color:var(--gold-200);font-weight:600;}
+.results-header .rh-left p{font-size:13px;color:var(--ink-60);margin-top:4px;}
+.results-header .rh-right{font-size:12px;color:var(--ink-40);text-align:right;}
+.results-header .rh-right strong{color:var(--gold-400);}
+.results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-sm);}
+.result-empty{grid-column:1/-1;text-align:center;padding:80px 20px;border:1px dashed var(--ink-20);border-radius:var(--radius-lg);color:var(--ink-40);}
+.result-empty .empty-icon{font-size:48px;margin-bottom:var(--space-sm);opacity:0.4;}
+.result-empty p{font-size:14px;}
+.result-card{position:relative;background:var(--surface-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:var(--space-md);transition:all 0.4s;cursor:default;overflow:hidden;}
+.result-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold-500),transparent);opacity:0;transition:opacity 0.4s;}
+.result-card:hover::before{opacity:1;}
+.result-card:hover{border-color:var(--border-strong);transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,0,0,0.3);}
+.result-card .rc-rank{position:absolute;top:var(--space-sm);right:var(--space-sm);font-family:var(--font-display);font-size:32px;color:var(--ink-20);font-weight:700;line-height:1;transition:color 0.3s;}
+
+.result-card.top-1 .rc-rank,
+.result-card.top-2 .rc-rank,
+.result-card.top-3 .rc-rank{color:rgba(201,168,76,0.15);}
+
+.result-card .rc-visual{width:80px;height:80px;border-radius:50%;background:var(--surface);border:1px solid var(--ink-20);display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:var(--space-sm);transition:all 0.3s;}
+.result-card:hover .rc-visual{border-color:var(--gold-600);box-shadow:0 0 20px rgba(201,168,76,0.1);}
+.result-card .rc-name{font-family:var(--font-display);font-size:20px;color:var(--gold-100);font-weight:600;margin-bottom:2px;}
+.result-card .rc-meta{font-size:12px;color:var(--ink-60);margin-bottom:var(--space-sm);display:flex;gap:8px;flex-wrap:wrap;}
+.result-card .rc-meta .rc-tag{padding:2px 8px;border-radius:var(--radius-pill);font-size:10px;letter-spacing:0.5px;}
+.rc-tag-rare{border:1px solid var(--gold-600);color:var(--gold-400);}
+.rc-tag-shiny{background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(240,215,140,0.1));border:1px solid var(--gold-400);color:var(--gold-300);}
+.rc-tag-same{border:1px solid var(--ink-20);color:var(--ink-50,var(--ink-60));}
+.result-card .rc-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:var(--space-sm);}
+.result-card .rc-stat{padding:8px 10px;background:var(--surface-alt);border-radius:var(--radius-sm);}
+.result-card .rc-stat .rc-stat-label{font-size:10px;color:var(--ink-40);letter-spacing:0.3px;}
+.result-card .rc-stat .rc-stat-value{font-size:13px;color:var(--ink-80);font-weight:500;font-family:var(--font-mono);}
+.result-card .rc-probability{display:flex;align-items:center;gap:var(--space-sm);}
+.result-card .rc-prob-bar{flex:1;height:4px;background:var(--ink-20);border-radius:2px;overflow:hidden;}
+.result-card .rc-prob-fill{height:100%;background:linear-gradient(90deg,var(--gold-600),var(--gold-400));border-radius:2px;width:0%;transition:width 0.8s ease;}
+.result-card .rc-prob-text{font-size:13px;color:var(--gold-400);font-family:var(--font-mono);font-weight:500;min-width:40px;text-align:right;}
+.result-card .rc-shiny-note{font-size:11px;color:var(--gold-300);margin-top:var(--space-xs);padding:6px 10px;background:rgba(201,168,76,0.04);border-radius:var(--radius-sm);border:1px solid rgba(201,168,76,0.08);}
+
+/* ============================================
+   REFERENCE TABLE
+   ============================================ */
+.ref-section{position:relative;z-index:2;padding:var(--space-section) var(--space-md);max-width:1200px;margin:0 auto;}
+.ref-table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--surface-card);}
+.ref-table-wrap::-webkit-scrollbar{height:4px;}
+.ref-table-wrap::-webkit-scrollbar-thumb{background:var(--gold-700);border-radius:2px;}
+.ref-table{width:100%;border-collapse:collapse;font-size:13px;}
+.ref-table thead th{padding:14px 16px;text-align:left;color:var(--gold-400);font-weight:500;font-size:11px;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--ink-20);background:var(--surface-alt);}
+.ref-table tbody tr{border-bottom:1px solid var(--ink-10);transition:background 0.3s;}
+.ref-table tbody tr:last-child{border-bottom:none;}
+.ref-table tbody tr:hover{background:rgba(201,168,76,0.03);}
+.ref-table tbody td{padding:12px 16px;color:var(--ink-70);}
+.ref-table .ref-name{color:var(--gold-200);font-weight:500;}
+.ref-table .ref-size,.ref-table .ref-weight{font-family:var(--font-mono);font-size:12px;color:var(--ink-60);}
+.ref-table .ref-action{padding:4px 14px;border:1px solid var(--border);border-radius:var(--radius-pill);background:transparent;color:var(--ink-60);font-size:11px;cursor:pointer;transition:all 0.3s;font-family:var(--font-body);white-space:nowrap;}
+.ref-table .ref-action:hover{border-color:var(--gold-500);color:var(--gold-300);background:rgba(201,168,76,0.06);}
+
+/* ============================================
+   FAQ — ACCORDION
+   ============================================ */
+.faq-section{position:relative;z-index:2;padding:var(--space-section) var(--space-md);max-width:800px;margin:0 auto;}
+.faq-list{display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;background:var(--surface-card);}
+.faq-item{border-bottom:1px solid var(--ink-10);}
+.faq-item:last-child{border-bottom:none;}
+.faq-q{padding:16px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:background 0.3s;gap:var(--space-sm);}
+.faq-q:hover{background:rgba(201,168,76,0.03);}
+.faq-q span{font-size:14px;color:var(--ink-80);font-weight:400;flex:1;line-height:1.5;}
+.faq-q .faq-icon{font-size:18px;color:var(--gold-500);transition:transform 0.3s;flex-shrink:0;}
+.faq-item.open .faq-q .faq-icon{transform:rotate(45deg);}
+.faq-a{padding:0 20px;max-height:0;overflow:hidden;transition:all 0.35s ease;}
+.faq-item.open .faq-a{padding:0 20px 16px;max-height:400px;}
+.faq-a p{font-size:14px;color:var(--ink-60);line-height:1.8;}
+
+/* ============================================
+   FEEDBACK
+   ============================================ */
+.feedback-section{position:relative;z-index:2;padding:var(--space-section) var(--space-md);max-width:680px;margin:0 auto;}
+.feedback-form{background:var(--surface-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:var(--space-lg);}
+.form-group{margin-bottom:var(--space-sm);}
+.form-group label{display:block;font-size:12px;color:var(--ink-60);margin-bottom:4px;font-weight:500;letter-spacing:0.3px;}
+.form-group input,.form-group textarea{width:100%;padding:10px 14px;background:var(--surface);border:1px solid var(--ink-20);border-radius:var(--radius-sm);color:var(--ink-90);font-size:14px;font-family:var(--font-body);outline:none;transition:border-color 0.3s;}
+.form-group input:focus,.form-group textarea:focus{border-color:var(--gold-500);}
+.form-group textarea{min-height:100px;resize:vertical;}
+.submit-feedback{padding:12px 32px;border:none;border-radius:var(--radius-md);background:linear-gradient(135deg,var(--gold-600),var(--gold-500));color:var(--ink-100);font-size:14px;font-weight:500;cursor:pointer;transition:all 0.3s;font-family:var(--font-body);letter-spacing:0.5px;}
+.submit-feedback:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(201,168,76,0.18);}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+footer{position:relative;z-index:2;border-top:1px solid var(--ink-20);padding:var(--space-lg) var(--space-md);text-align:center;}
+footer p{font-size:12px;color:var(--ink-40);}
+footer a{color:var(--gold-500);text-decoration:none;}
+
+/* ============================================
+   RESULTS — ANCHOR
+   ============================================ */
+#results-anchor{scroll-margin-top:80px;}
+
+/* ============================================
+   REVEAL ANIMATION
+   ============================================ */
+.reveal{opacity:0;transform:translateY(30px);transition:all 0.7s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media(max-width:768px){
+  .input-row{grid-template-columns:1fr;}
+  .query-card{padding:var(--space-md);}
+  .query-header{flex-direction:column;align-items:flex-start;}
+  .results-grid{grid-template-columns:1fr;}
+  .nav-links{display:none;}
+  .hot-queries-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));}
+  .section{padding:var(--space-xl) var(--space-sm);}
+  .results-section{padding:var(--space-xl) var(--space-sm);}
+  .ref-section{padding:var(--space-xl) var(--space-sm);}
+  .faq-section{padding:var(--space-xl) var(--space-sm);}
+  .feedback-section{padding:var(--space-xl) var(--space-sm);}
+  .query-section{padding:40px var(--space-sm);}
+  .hero h1{font-size:32px;}
+}
+@media(max-width:480px){
+  .query-actions{flex-direction:column;}
+  .results-grid{grid-template-columns:1fr;}
+  .hot-queries-grid{grid-template-columns:1fr 1fr;}
+}
+
+/* ============================================
+   TOAST
+   ============================================ */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--surface-card);border:1px solid var(--border-strong);border-radius:var(--radius-md);padding:12px 24px;color:var(--gold-200);font-size:14px;z-index:9998;opacity:0;transition:all 0.4s;pointer-events:none;box-shadow:0 8px 30px rgba(0,0,0,0.4);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- Scroll Progress -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- Gold Orbs -->
+<div class="gold-orb" id="orb1"></div>
+<div class="gold-orb-2" id="orb2"></div>
+
+<!-- Sparkle Canvas -->
+<canvas id="sparkleCanvas"></canvas>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ========== NAV ========== -->
+<nav>
+  <a href="#" class="nav-logo">
+    <span class="logo-icon">✦</span>
+    灵蛋所
+  </a>
+  <ul class="nav-links">
+    <li><a href="#query">孵蛋查询</a></li>
+    <li><a href="#results">结果</a></li>
+    <li><a href="#reference">数据参考</a></li>
+    <li><a href="#faq">常见问题</a></li>
+    <li><a href="#feedback">反馈</a></li>
+  </ul>
+</nav>
+
+<!-- ========== HERO ========== -->
+<section class="hero">
+  <div class="hero-badge reveal">✦ 灵蛋所 · Lab 03</div>
+  <h1 class="reveal"><span class="gold-shimmer">洛克王国</span><br>孵蛋查询</h1>
+  <p class="subtitle reveal">
+    输入蛋体尺寸与重量，基于 <strong>500+</strong> 精灵数据实时推算
+    可能孵化的精灵与<strong>异色</strong>形态出现概率
+  </p>
+</section>
+
+<!-- ========== QUERY ========== -->
+<section class="query-section" id="query">
+  <div class="query-card reveal">
+    <div class="query-header">
+      <h2>孵化工作台</h2>
+      <div class="query-templates">
+        <button class="template-btn" data-size="0.28" data-weight="2.36">迪莫 0.28m · 2.36kg</button>
+        <button class="template-btn" data-size="0.27" data-weight="1.55">喵喵 0.27m · 1.55kg</button>
+        <button class="template-btn" data-size="0.25" data-weight="1.95">火花 0.25m · 1.95kg</button>
+      </div>
+    </div>
+    <div class="input-row">
+      <div class="input-group">
+        <label>蛋体尺寸（m）</label>
+        <div class="input-wrapper">
+          <input type="number" id="sizeInput" step="0.01" min="0.01" max="3" placeholder="例如 0.28">
+          <span class="input-unit">m</span>
+        </div>
+      </div>
+      <div class="input-group">
+        <label>蛋体重量（kg）</label>
+        <div class="input-wrapper">
+          <input type="number" id="weightInput" step="0.01" min="0.01" max="50" placeholder="例如 2.36">
+          <span class="input-unit">kg</span>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:11px;color:var(--ink-40);margin-bottom:var(--space-sm);">热门蛋体查询 ↓</p>
+    <div class="hot-eggs">
+      <button class="hot-egg-btn" data-size="0.27" data-weight="1.55"><span class="egg-icon">🥚</span>0.27m · 1.55kg</button>
+      <button class="hot-egg-btn" data-size="0.28" data-weight="2.36"><span class="egg-icon">🥚</span>0.28m · 2.36kg</button>
+      <button class="hot-egg-btn" data-size="0.25" data-weight="1.95"><span class="egg-icon">🥚</span>0.25m · 1.95kg</button>
+      <button class="hot-egg-btn" data-size="0.18" data-weight="0.09"><span class="egg-icon">🥚</span>0.18m · 0.09kg</button>
+      <button class="hot-egg-btn" data-size="0.20" data-weight="2.78"><span class="egg-icon">🥚</span>0.20m · 2.78kg</button>
+    </div>
+    <div class="query-actions">
+      <button class="query-btn" id="queryBtn">✦ 开始孵蛋查询</button>
+      <button class="query-btn-secondary" id="resetBtn">重置</button>
+    </div>
+    <p class="query-note">
+      结果不准？<a href="#feedback">告诉我们</a>
+      · 感谢 <strong style="color:var(--gold-400);font-weight:400;">@匿名</strong> · <strong style="color:var(--gold-400);font-weight:400;">@琳枭</strong> 的反馈
+    </p>
+  </div>
+</section>
+
+<!-- ========== RESULTS ========== -->
+<section class="results-section" id="results">
+  <div id="results-anchor"></div>
+  <div class="results-header reveal">
+    <div class="rh-left">
+      <h2>可能孵化的精灵</h2>
+      <p>按匹配概率从高到低排列</p>
+    </div>
+    <div class="rh-right">
+      <span>匹配数据库 · <strong id="totalCount">500+</strong> 精灵</span>
+    </div>
+  </div>
+  <div class="results-grid" id="resultsGrid">
+    <div class="result-empty">
+      <div class="empty-icon">🥚</div>
+      <p>输入蛋体数据并点击「开始孵蛋查询」<br>或选择一个快捷模板</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== REFERENCE TABLE ========== -->
+<section class="ref-section" id="reference">
+  <div class="section-label reveal">Reference</div>
+  <h2 class="section-title reveal">常见精灵 · 蛋体参考表</h2>
+  <p class="section-desc reveal" style="margin-bottom:var(--space-lg);">
+    点击任意行即可用该精灵的中位数直接发起孵蛋查询
+  </p>
+  <div class="ref-table-wrap reveal">
+    <table class="ref-table">
+      <thead>
+        <tr>
+          <th>精灵</th>
+          <th>尺寸区间 (m)</th>
+          <th>重量区间 (kg)</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="refTableBody"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ========== FAQ ========== -->
+<section class="faq-section" id="faq">
+  <div class="section-label reveal">FAQ</div>
+  <h2 class="section-title reveal">常见问题</h2>
+  <p class="section-desc reveal" style="margin-bottom:var(--space-lg);">
+    关于灵蛋所孵蛋查询工具的常见疑问
+  </p>
+  <div class="faq-list reveal" id="faqList"></div>
+</section>
+
+<!-- ========== FEEDBACK ========== -->
+<section class="feedback-section" id="feedback">
+  <div class="section-label reveal">Feedback</div>
+  <h2 class="section-title reveal">留下你的反馈</h2>
+  <p class="section-desc reveal" style="margin-bottom:var(--space-lg);">
+    遇到 Bug、数据偏差或只是想说一句感谢——我们会在 48 小时内查看每一条留言。
+  </p>
+  <div class="feedback-form reveal">
+    <form id="feedbackForm">
+      <div class="form-group">
+        <label>用户名</label>
+        <input type="text" id="fbName" placeholder="你的名字（可选）">
+      </div>
+      <div class="form-group">
+        <label>邮箱</label>
+        <input type="email" id="fbEmail" placeholder="用于后续联系（可选）">
+      </div>
+      <div class="form-group">
+        <label>留言内容 *</label>
+        <textarea id="fbMessage" placeholder="请描述你遇到的问题或建议…"></textarea>
+      </div>
+      <button type="submit" class="submit-feedback">✦ 发送反馈</button>
+    </form>
+  </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<footer>
+  <p>灵蛋所 · 洛克王国孵蛋查询 &mdash; 数据来源于官方精灵表 &middot; 仅供训练家参考</p>
+  <p style="margin-top:4px;"><a href="#">回到顶部 ↑</a></p>
+</footer>
+
+<script>
+// =============================================
+// DATA — 精灵数据库
+// =============================================
+const PET_DB = [
+  { id: 1,  name: '一窝蜂',      emoji: '🐝', sizeMin: 0.180, sizeMax: 0.220, wgtMin: 1.680, wgtMax: 4.880, petId: '082' },
+  { id: 2,  name: '丢丢',      emoji: '🐾', sizeMin: 0.150, sizeMax: 0.210, wgtMin: 1.508, wgtMax: 2.440, petId: '044' },
+  { id: 3,  name: '乌拉塔',      emoji: '🪨', sizeMin: 0.650, sizeMax: 0.900, wgtMin: 10.000, wgtMax: 15.000, petId: '260' },
+  { id: 4,  name: '乌达',      emoji: '🌊', sizeMin: 0.190, sizeMax: 0.240, wgtMin: 1.613, wgtMax: 2.440, petId: '258' },
+  { id: 5,  name: '乖乖鹄',      emoji: '🕊️', sizeMin: 0.210, sizeMax: 0.270, wgtMin: 1.557, wgtMax: 2.109, petId: '088' },
+  { id: 6,  name: '九幽菇',      emoji: '🍄', sizeMin: 0.550, sizeMax: 0.800, wgtMin: 6.000, wgtMax: 9.000, petId: '176' },
+  { id: 7,  name: '书魔虫',      emoji: '📖', sizeMin: 0.120, sizeMax: 0.170, wgtMin: 0.912, wgtMax: 1.544, petId: '303' },
+  { id: 8,  name: '仪使者',      emoji: '⚜️', sizeMin: 0.180, sizeMax: 0.232, wgtMin: 7.620, wgtMax: 14.020, petId: '113' },
+  { id: 9,  name: '伊兰龙',      emoji: '🐉', sizeMin: 0.700, sizeMax: 0.950, wgtMin: 11.000, wgtMax: 16.000, petId: '204' },
+  { id: 10,  name: '伊贝儿',      emoji: '🐣', sizeMin: 0.176, sizeMax: 0.260, wgtMin: 1.276, wgtMax: 1.680, petId: '071' },
+  { id: 11,  name: '伊贝粉粉',      emoji: '🩷', sizeMin: 0.450, sizeMax: 0.650, wgtMin: 3.500, wgtMax: 6.000, petId: '072' },
+  { id: 12,  name: '伊雷龙',      emoji: '🐲', sizeMin: 0.288, sizeMax: 0.380, wgtMin: 10.414, wgtMax: 13.600, petId: '203' },
+  { id: 13,  name: '伏地兽',      emoji: '🦎', sizeMin: 0.208, sizeMax: 0.296, wgtMin: 4.960, wgtMax: 6.320, petId: '060' },
+  { id: 14,  name: '优优',      emoji: '🐰', sizeMin: 0.152, sizeMax: 0.230, wgtMin: 1.098, wgtMax: 1.636, petId: '270' },
+  { id: 15,  name: '公平鸽',      emoji: '🕊️', sizeMin: 0.180, sizeMax: 0.680, wgtMin: 0.894, wgtMax: 1.576, petId: '162' },
+  { id: 16,  name: '兽花蕾',      emoji: '🌺', sizeMin: 0.152, sizeMax: 0.180, wgtMin: 1.559, wgtMax: 2.600, petId: '059' },
+  { id: 17,  name: '冰钻布鲁斯',      emoji: '💎', sizeMin: 0.650, sizeMax: 0.900, wgtMin: 9.000, wgtMax: 13.000, petId: '254' },
+  { id: 18,  name: '刺轮砣',      emoji: '⚙️', sizeMin: 0.090, sizeMax: 0.130, wgtMin: 1.085, wgtMax: 1.600, petId: '237' },
+  { id: 19,  name: '化蝶',      emoji: '🦋', sizeMin: 0.450, sizeMax: 0.650, wgtMin: 3.500, wgtMax: 6.000, petId: '034' },
+  { id: 20,  name: '卡洛儿',      emoji: '🎵', sizeMin: 0.480, sizeMax: 0.680, wgtMin: 4.000, wgtMax: 6.500, petId: '187' },
+  { id: 21,  name: '卡瓦重',      emoji: '🪣', sizeMin: 0.450, sizeMax: 0.700, wgtMin: 4.000, wgtMax: 7.000, petId: '046' },
+  { id: 22,  name: '卷毛鸭',      emoji: '🦆', sizeMin: 0.400, sizeMax: 0.600, wgtMin: 2.500, wgtMax: 5.000, petId: '180' },
+  { id: 23,  name: '卷胡巨獭',      emoji: '🦦', sizeMin: 0.650, sizeMax: 0.900, wgtMin: 9.000, wgtMax: 13.000, petId: '038' },
+  { id: 24,  name: '厉毒小萝',      emoji: '🧪', sizeMin: 0.220, sizeMax: 0.260, wgtMin: 3.492, wgtMax: 5.968, petId: '291' },
+  { id: 25,  name: '双灯鱼',      emoji: '🐟', sizeMin: 0.210, sizeMax: 0.288, wgtMin: 5.960, wgtMax: 7.120, petId: '320' },
+  { id: 26,  name: '古钟蛇',      emoji: '🐍', sizeMin: 0.410, sizeMax: 0.750, wgtMin: 2.572, wgtMax: 9.000, petId: '212' },
+  { id: 27,  name: '叮叮恶魔',      emoji: '😈', sizeMin: 0.500, sizeMax: 0.720, wgtMin: 5.000, wgtMax: 7.500, petId: '031' },
+  { id: 28,  name: '可爱猿',      emoji: '🐒', sizeMin: 0.276, sizeMax: 0.392, wgtMin: 8.400, wgtMax: 12.600, petId: '249' },
+  { id: 29,  name: '可立鸡',      emoji: '🐔', sizeMin: 0.170, sizeMax: 0.230, wgtMin: 1.665, wgtMax: 2.959, petId: '266' },
+  { id: 30,  name: '号儿鱼',      emoji: '🐠', sizeMin: 0.130, sizeMax: 0.170, wgtMin: 1.395, wgtMax: 2.087, petId: '183' },
+  { id: 31,  name: '吸泥鸥',      emoji: '🕊️', sizeMin: 0.220, sizeMax: 0.290, wgtMin: 3.426, wgtMax: 5.000, petId: '287' },
+  { id: 32,  name: '呆小路',      emoji: '🛤️', sizeMin: 0.250, sizeMax: 0.750, wgtMin: 1.624, wgtMax: 7.500, petId: '195' },
+  { id: 33,  name: '呼呼猪',      emoji: '🐷', sizeMin: 0.220, sizeMax: 0.720, wgtMin: 2.442, wgtMax: 8.000, petId: '137' },
+  { id: 34,  name: '咔咔羽毛',      emoji: '🪶', sizeMin: 0.248, sizeMax: 0.356, wgtMin: 1.048, wgtMax: 1.560, petId: '096' },
+  { id: 35,  name: '咔咔鸟',      emoji: '🐦', sizeMin: 0.450, sizeMax: 0.650, wgtMin: 3.500, wgtMax: 6.000, petId: '098' },
+  { id: 36,  name: '哭哭菇',      emoji: '🍄', sizeMin: 0.120, sizeMax: 0.200, wgtMin: 0.650, wgtMax: 1.254, petId: '128' },
+  { id: 37,  name: '喵呜',      emoji: '🐱', sizeMin: 0.500, sizeMax: 0.700, wgtMin: 6.000, wgtMax: 9.000, petId: '003' },
+  { id: 38,  name: '喵喵',      emoji: '🐱', sizeMin: 0.400, sizeMax: 0.600, wgtMin: 3.000, wgtMax: 5.000, petId: '002' },
+  { id: 39,  name: '嗜光嗡嗡',      emoji: '🪲', sizeMin: 0.096, sizeMax: 0.130, wgtMin: 0.584, wgtMax: 1.220, petId: '323' },
+  { id: 40,  name: '嗜波螺',      emoji: '🐚', sizeMin: 0.500, sizeMax: 0.720, wgtMin: 5.000, wgtMax: 7.500, petId: '173' },
+  { id: 41,  name: '嘟嘟煲',      emoji: '🍲', sizeMin: 0.260, sizeMax: 0.330, wgtMin: 17.336, wgtMax: 22.158, petId: '052' },
+  { id: 42,  name: '嘟嘟锅',      emoji: '🍲', sizeMin: 0.450, sizeMax: 0.650, wgtMin: 3.500, wgtMax: 6.000, petId: '053' },
+  { id: 43,  name: '噼啪鸟',      emoji: '⚡', sizeMin: 0.400, sizeMax: 0.860, wgtMin: 35.800, wgtMax: 51.000, petId: '272' },
+  { id: 44,  name: '圆眼蜘蛛',      emoji: '🕷️', sizeMin: 0.192, sizeMax: 0.280, wgtMin: 1.262, wgtMax: 1.902, petId: '168' },
+  { id: 45,  name: '圣代甜甜',      emoji: '🍦', sizeMin: 0.420, sizeMax: 0.620, wgtMin: 3.000, wgtMax: 5.000, petId: '236' },
+  { id: 46,  name: '圣剑-X',      emoji: '⚔️', sizeMin: 0.700, sizeMax: 0.950, wgtMin: 12.000, wgtMax: 18.000, petId: '286' },
+  { id: 47,  name: '圣剑侍从',      emoji: '🛡️', sizeMin: 0.376, sizeMax: 0.490, wgtMin: 46.280, wgtMax: 69.440, petId: '285' },
+  { id: 48,  name: '地鼠',      emoji: '🐭', sizeMin: 0.184, sizeMax: 0.270, wgtMin: 0.630, wgtMax: 1.140, petId: '277' },
+  { id: 49,  name: '墨鱿士',      emoji: '🦑', sizeMin: 0.140, sizeMax: 0.184, wgtMin: 1.300, wgtMax: 2.008, petId: '280' },
+  { id: 50,  name: '多多',      emoji: '🐶', sizeMin: 0.190, sizeMax: 0.270, wgtMin: 5.210, wgtMax: 7.292, petId: '125' },
+  { id: 51,  name: '多西',      emoji: '🐕', sizeMin: 0.260, sizeMax: 0.376, wgtMin: 2.280, wgtMax: 2.840, petId: '221' },
+  { id: 52,  name: '大头骨龙',      emoji: '🦴', sizeMin: 0.360, sizeMax: 0.420, wgtMin: 7.288, wgtMax: 13.400, petId: '289' },
+  { id: 53,  name: '大耳帽兜',      emoji: '🎩', sizeMin: 0.170, sizeMax: 0.200, wgtMin: 2.965, wgtMax: 4.145, petId: '142' },
+  { id: 54,  name: '奇丽花',      emoji: '🌸', sizeMin: 0.500, sizeMax: 0.700, wgtMin: 4.500, wgtMax: 7.000, petId: '043' },
+  { id: 55,  name: '奇丽草',      emoji: '🌿', sizeMin: 0.160, sizeMax: 0.230, wgtMin: 0.872, wgtMax: 2.204, petId: '041' },
+  { id: 56,  name: '奔波鼠',      emoji: '🐭', sizeMin: 0.200, sizeMax: 0.250, wgtMin: 1.449, wgtMax: 2.560, petId: '193' },
+  { id: 57,  name: '寂灭骨龙',      emoji: '💀', sizeMin: 0.750, sizeMax: 1.000, wgtMin: 13.000, wgtMax: 18.000, petId: '290' },
+  { id: 58,  name: '寒音蛇',      emoji: '🐍', sizeMin: 0.500, sizeMax: 0.750, wgtMin: 5.000, wgtMax: 9.000, petId: '213' },
+  { id: 59,  name: '小夜',      emoji: '🌙', sizeMin: 0.220, sizeMax: 0.300, wgtMin: 1.625, wgtMax: 3.016, petId: '085' },
+  { id: 60,  name: '小帕尔',      emoji: '🐣', sizeMin: 0.270, sizeMax: 0.300, wgtMin: 3.343, wgtMax: 3.940, petId: '293' },
+  { id: 61,  name: '小怂猫',      emoji: '😿', sizeMin: 0.250, sizeMax: 0.350, wgtMin: 7.050, wgtMax: 9.000, petId: '163' },
+  { id: 62,  name: '小星光',      emoji: '⭐', sizeMin: 0.312, sizeMax: 0.700, wgtMin: 5.000, wgtMax: 14.480, petId: '080' },
+  { id: 63,  name: '小灵菇',      emoji: '🍄', sizeMin: 0.180, sizeMax: 0.250, wgtMin: 1.925, wgtMax: 2.779, petId: '021' },
+  { id: 64,  name: '小灵面',      emoji: '👻', sizeMin: 0.160, sizeMax: 0.230, wgtMin: 0.036, wgtMax: 0.060, petId: '054' },
+  { id: 65,  name: '小独角兽',      emoji: '🦄', sizeMin: 0.420, sizeMax: 0.590, wgtMin: 14.589, wgtMax: 22.234, petId: '116' },
+  { id: 66,  name: '小狮鹫',      emoji: '🦅', sizeMin: 0.310, sizeMax: 0.420, wgtMin: 4.309, wgtMax: 7.373, petId: '165' },
+  { id: 67,  name: '小甲虫',      emoji: '🪲', sizeMin: 0.200, sizeMax: 0.280, wgtMin: 2.399, wgtMax: 3.341, petId: '283' },
+  { id: 68,  name: '小电企鹅',      emoji: '🐧', sizeMin: 0.190, sizeMax: 0.230, wgtMin: 1.409, wgtMax: 2.156, petId: '132' },
+  { id: 69,  name: '小皮球',      emoji: '⚪', sizeMin: 0.400, sizeMax: 0.600, wgtMin: 2.500, wgtMax: 5.000, petId: '331' },
+  { id: 70,  name: '小箱怪',      emoji: '📦', sizeMin: 0.140, sizeMax: 0.190, wgtMin: 1.718, wgtMax: 2.724, petId: '210' },
+  { id: 71,  name: '小翼龙',      emoji: '🦎', sizeMin: 0.320, sizeMax: 0.348, wgtMin: 12.146, wgtMax: 14.600, petId: '224' },
+  { id: 72,  name: '小草虫',      emoji: '🐛', sizeMin: 0.188, sizeMax: 0.280, wgtMin: 0.840, wgtMax: 1.360, petId: '099' },
+  { id: 73,  name: '小鹬',      emoji: '🐦', sizeMin: 0.100, sizeMax: 0.150, wgtMin: 0.560, wgtMax: 0.880, petId: '231' },
+  { id: 74,  name: '小黑猫',      emoji: '🐈⬛', sizeMin: 0.220, sizeMax: 0.650, wgtMin: 1.240, wgtMax: 6.500, petId: '121' },
+  { id: 75,  name: '小鼠獭',      emoji: '🦦', sizeMin: 0.160, sizeMax: 0.280, wgtMin: 2.431, wgtMax: 3.507, petId: '036' },
+  { id: 76,  name: '岚鸟',      emoji: '🐦', sizeMin: 0.520, sizeMax: 0.750, wgtMin: 5.500, wgtMax: 8.000, petId: '020' },
+  { id: 77,  name: '巨噬针鼹',      emoji: '🦔', sizeMin: 0.550, sizeMax: 0.800, wgtMin: 7.000, wgtMax: 11.000, petId: '062' },
+  { id: 78,  name: '巨灵石',      emoji: '🪨', sizeMin: 0.750, sizeMax: 1.000, wgtMin: 16.000, wgtMax: 24.000, petId: '112' },
+  { id: 79,  name: '布克棱岩',      emoji: '⛰️', sizeMin: 0.700, sizeMax: 0.950, wgtMin: 14.000, wgtMax: 20.000, petId: '029' },
+  { id: 80,  name: '布是石',      emoji: '🪨', sizeMin: 0.120, sizeMax: 0.250, wgtMin: 3.320, wgtMax: 12.914, petId: '027' },
+  { id: 81,  name: '布瓜蝌',      emoji: '🐸', sizeMin: 0.128, sizeMax: 0.204, wgtMin: 0.180, wgtMax: 0.660, petId: '338' },
+  { id: 82,  name: '布鲁斯',      emoji: '🐻', sizeMin: 0.212, sizeMax: 0.304, wgtMin: 0.960, wgtMax: 1.840, petId: '252' },
+  { id: 83,  name: '幻影灵菇',      emoji: '🍄', sizeMin: 0.500, sizeMax: 0.700, wgtMin: 4.500, wgtMax: 7.000, petId: '023' },
+  { id: 84,  name: '幽冥眼',      emoji: '👁️', sizeMin: 0.450, sizeMax: 0.650, wgtMin: 3.500, wgtMax: 6.000, petId: '056' },
+  { id: 85,  name: '幽影树',      emoji: '🌳', sizeMin: 0.250, sizeMax: 0.850, wgtMin: 10.654, wgtMax: 15.000, petId: '035' },
+  { id: 86,  name: '彩蝶鲨',      emoji: '🦈', sizeMin: 0.580, sizeMax: 0.820, wgtMin: 7.000, wgtMax: 10.000, petId: '110' },
+  { id: 87,  name: '影狸',      emoji: '🦊', sizeMin: 0.390, sizeMax: 0.720, wgtMin: 3.477, wgtMax: 7.500, petId: '124' },
+  { id: 88,  name: '怖哭菇',      emoji: '🍄', sizeMin: 0.520, sizeMax: 0.750, wgtMin: 5.000, wgtMax: 7.500, petId: '130' },
+  { id: 89,  name: '恶魔叮',      emoji: '😈', sizeMin: 0.156, sizeMax: 0.224, wgtMin: 1.265, wgtMax: 2.080, petId: '030' },
+  { id: 90,  name: '恶魔狼',      emoji: '🐺', sizeMin: 0.300, sizeMax: 0.780, wgtMin: 25.909, wgtMax: 36.711, petId: '131' },
+  { id: 91,  name: '护主犬',      emoji: '🐕', sizeMin: 0.270, sizeMax: 0.380, wgtMin: 4.798, wgtMax: 6.893, petId: '047' },
+  { id: 92,  name: '拉特',      emoji: '🐕', sizeMin: 0.196, sizeMax: 0.250, wgtMin: 2.806, wgtMax: 3.653, petId: '205' },
+  { id: 93,  name: '斑斑',      emoji: '🐆', sizeMin: 0.188, sizeMax: 0.250, wgtMin: 1.704, wgtMax: 2.468, petId: '177' },
+  { id: 94,  name: '斑枭',      emoji: '🦉', sizeMin: 0.500, sizeMax: 0.720, wgtMin: 5.000, wgtMax: 7.500, petId: '178' },
+  { id: 95,  name: '旋叶虫',      emoji: '🍃', sizeMin: 0.040, sizeMax: 0.060, wgtMin: 0.055, wgtMax: 0.340, petId: '118' },
+  { id: 96,  name: '星尘虫',      emoji: '✨', sizeMin: 0.060, sizeMax: 0.080, wgtMin: 0.180, wgtMax: 0.560, petId: '317' },
+  { id: 97,  name: '春团',      emoji: '🌸', sizeMin: 0.140, sizeMax: 0.210, wgtMin: 0.840, wgtMax: 1.440, petId: '342' },
+  { id: 98,  name: '春花兔',      emoji: '🐰', sizeMin: 0.480, sizeMax: 0.680, wgtMin: 4.500, wgtMax: 7.000, petId: '344' },
+  { id: 99,  name: '晶石蜗',      emoji: '🐌', sizeMin: 0.500, sizeMax: 0.750, wgtMin: 6.000, wgtMax: 10.000, petId: '040' },
+  { id: 100, name: '月牙雪熊',      emoji: '🐻', sizeMin: 0.530, sizeMax: 0.850, wgtMin: 27.691, wgtMax: 37.000, petId: '322' },
+  { id: 101, name: '朔夜伊芙',      emoji: '🌙', sizeMin: 0.600, sizeMax: 0.850, wgtMin: 8.000, wgtMax: 12.000, petId: '087' },
+  { id: 102, name: '机械方方',      emoji: '🤖', sizeMin: 0.168, sizeMax: 0.600, wgtMin: 3.200, wgtMax: 11.000, petId: '263' },
+  { id: 103, name: '权杖-Ⅱ',      emoji: '⚡', sizeMin: 0.190, sizeMax: 0.230, wgtMin: 9.982, wgtMax: 14.249, petId: '145' },
+  { id: 104, name: '权杖-Ⅴ',      emoji: '⚡', sizeMin: 0.220, sizeMax: 0.230, wgtMin: 12.724, wgtMax: 13.583, petId: '146' },
+  { id: 105, name: '板板壳',      emoji: '🐢', sizeMin: 0.210, sizeMax: 0.310, wgtMin: 2.694, wgtMax: 4.200, petId: '012' },
+  { id: 106, name: '果冻',      emoji: '🫧', sizeMin: 0.120, sizeMax: 0.600, wgtMin: 1.535, wgtMax: 5.000, petId: '313' },
+  { id: 107, name: '柴渣虫',      emoji: '🔥', sizeMin: 0.190, sizeMax: 0.230, wgtMin: 5.165, wgtMax: 7.440, petId: '325' },
+  { id: 108, name: '格兰球',      emoji: '🌿', sizeMin: 0.480, sizeMax: 0.680, wgtMin: 4.000, wgtMax: 6.500, petId: '276' },
+  { id: 109, name: '格兰种子',      emoji: '🌱', sizeMin: 0.160, sizeMax: 0.240, wgtMin: 1.300, wgtMax: 2.160, petId: '274' },
+  { id: 110, name: '梦悠悠',      emoji: '😴', sizeMin: 0.450, sizeMax: 0.650, wgtMin: 3.500, wgtMax: 6.000, petId: '058' },
+  { id: 111, name: '梦想三三',      emoji: '✨', sizeMin: 0.550, sizeMax: 0.800, wgtMin: 7.000, wgtMax: 11.000, petId: '200' },
+  { id: 112, name: '梦游',      emoji: '😴', sizeMin: 0.210, sizeMax: 0.250, wgtMin: 0.300, wgtMax: 0.403, petId: '057' },
+  { id: 113, name: '棋棋',      emoji: '♟️', sizeMin: 0.150, sizeMax: 0.200, wgtMin: 2.203, wgtMax: 5.497, petId: '188' },
+  { id: 114, name: '武者鸡',      emoji: '🥋', sizeMin: 0.480, sizeMax: 0.680, wgtMin: 4.000, wgtMax: 6.500, petId: '269' },
+  { id: 115, name: '毛头小蛛',      emoji: '🕷️', sizeMin: 0.120, sizeMax: 0.180, wgtMin: 0.335, wgtMax: 0.800, petId: '296' },
+  { id: 116, name: '毛毛',      emoji: '🐛', sizeMin: 0.130, sizeMax: 0.190, wgtMin: 1.069, wgtMax: 1.800, petId: '032' },
+  { id: 117, name: '水泡壳',      emoji: '🐌', sizeMin: 0.450, sizeMax: 0.650, wgtMin: 3.500, wgtMax: 6.000, petId: '014' },
+  { id: 118, name: '水灵',      emoji: '💧', sizeMin: 0.550, sizeMax: 0.750, wgtMin: 6.000, wgtMax: 9.000, petId: '010' },
+  { id: 119, name: '水蓝蓝',      emoji: '💧', sizeMin: 0.200, sizeMax: 0.200, wgtMin: 1.060, wgtMax: 1.066, petId: '008' },
+  { id: 120, name: '治愈兔',      emoji: '🐰', sizeMin: 0.240, sizeMax: 0.340, wgtMin: 4.221, wgtMax: 5.650, petId: '255' },
+  { id: 121, name: '波多西',      emoji: '🐕', sizeMin: 0.750, sizeMax: 1.000, wgtMin: 14.000, wgtMax: 20.000, petId: '223' },
+  { id: 122, name: '波波螺',      emoji: '🐚', sizeMin: 0.140, sizeMax: 0.170, wgtMin: 1.720, wgtMax: 2.260, petId: '171' },
+  { id: 123, name: '泥吼牙',      emoji: '🦈', sizeMin: 0.550, sizeMax: 0.800, wgtMin: 6.000, wgtMax: 9.000, petId: '288' },
+  { id: 124, name: '海枝枝',      emoji: '🪸', sizeMin: 0.320, sizeMax: 0.350, wgtMin: 1.320, wgtMax: 2.463, petId: '220' },
+  { id: 125, name: '海盔虫',      emoji: '🪸', sizeMin: 0.230, sizeMax: 0.290, wgtMin: 2.644, wgtMax: 3.440, petId: '076' },
+  { id: 126, name: '海豹战士',      emoji: '🦭', sizeMin: 0.280, sizeMax: 0.380, wgtMin: 25.099, wgtMax: 34.986, petId: '181' },
+  { id: 127, name: '海豹船长',      emoji: '🦭', sizeMin: 0.550, sizeMax: 0.800, wgtMin: 7.000, wgtMax: 11.000, petId: '182' },
+  { id: 128, name: '深蓝鲸',      emoji: '🐋', sizeMin: 0.800, sizeMax: 1.100, wgtMin: 258.000, wgtMax: 280.000, petId: '273' },
+  { id: 129, name: '火尾瓦特',      emoji: '🔥', sizeMin: 0.270, sizeMax: 0.380, wgtMin: 6.612, wgtMax: 8.425, petId: '216' },
+  { id: 130, name: '烈火守护',      emoji: '🔥', sizeMin: 0.600, sizeMax: 0.970, wgtMin: 9.000, wgtMax: 15.000, petId: '218' },
+  { id: 131, name: '火神',      emoji: '🔥', sizeMin: 0.500, sizeMax: 0.700, wgtMin: 5.000, wgtMax: 8.000, petId: '007' },
+  { id: 132, name: '火焰猿',      emoji: '🐒', sizeMin: 0.600, sizeMax: 0.850, wgtMin: 9.000, wgtMax: 13.000, petId: '251' },
+  { id: 133, name: '炽心勇狮',      emoji: '🦁', sizeMin: 0.680, sizeMax: 0.920, wgtMin: 10.000, wgtMax: 14.000, petId: '158' },
+  { id: 134, name: '燃薪虫',      emoji: '🔥', sizeMin: 0.450, sizeMax: 0.650, wgtMin: 3.500, wgtMax: 6.000, petId: '326' },
+  { id: 135, name: '爵士鹿',      emoji: '🦌', sizeMin: 0.650, sizeMax: 0.900, wgtMin: 9.000, wgtMax: 13.000, petId: '228' },
+  { id: 136, name: '犀角鸟',      emoji: '🦏', sizeMin: 0.128, sizeMax: 0.160, wgtMin: 3.840, wgtMax: 4.600, petId: '310' },
+  { id: 137, name: '独角龙',      emoji: '🦕', sizeMin: 0.550, sizeMax: 0.800, wgtMin: 8.000, wgtMax: 12.000, petId: '340' },
+  { id: 138, name: '猫老大',      emoji: '🐱', sizeMin: 0.600, sizeMax: 0.800, wgtMin: 8.000, wgtMax: 10.000, petId: '004' },
+  { id: 139, name: '灵石猴',      emoji: '🐵', sizeMin: 0.290, sizeMax: 0.400, wgtMin: 11.776, wgtMax: 18.000, petId: '148' },
+  { id: 140, name: '炫目鸡',      emoji: '🐓', sizeMin: 0.450, sizeMax: 0.650, wgtMin: 3.500, wgtMax: 6.000, petId: '354' },
+  { id: 141, name: '爱丽儿',      emoji: '🧜‍♀️', sizeMin: 0.480, sizeMax: 0.680, wgtMin: 4.000, wgtMax: 6.500, petId: '076' },
+  { id: 142, name: '犀牛霸王',      emoji: '🦏', sizeMin: 0.700, sizeMax: 0.950, wgtMin: 12.000, wgtMax: 18.000, petId: '350' },
+  { id: 143, name: '狮鹫',      emoji: '🦅', sizeMin: 0.700, sizeMax: 0.850, wgtMin: 8.000, wgtMax: 12.000, petId: '165' },
+  { id: 144, name: '独角兽',      emoji: '🦄', sizeMin: 0.550, sizeMax: 0.750, wgtMin: 16.000, wgtMax: 25.000, petId: '116' },
+  { id: 145, name: '甜心梦梦',      emoji: '💕', sizeMin: 0.260, sizeMax: 0.340, wgtMin: 2.670, wgtMax: 3.660, petId: '354' },
+  { id: 146, name: '电子长颈鹿',      emoji: '🦒', sizeMin: 0.680, sizeMax: 0.920, wgtMin: 12.000, wgtMax: 18.000, petId: '226' },
+  { id: 147, name: '电咩咩',      emoji: '🐑', sizeMin: 0.250, sizeMax: 0.650, wgtMin: 2.572, wgtMax: 6.000, petId: '066' },
+  { id: 148, name: '画精灵',      emoji: '🎨', sizeMin: 0.112, sizeMax: 0.720, wgtMin: 0.367, wgtMax: 0.884, petId: '299' },
+  { id: 149, name: '白发懒人',      emoji: '🦥', sizeMin: 0.310, sizeMax: 0.430, wgtMin: 6.951, wgtMax: 9.400, petId: '073' },
+  { id: 150, name: '百花公主',      emoji: '👸', sizeMin: 0.480, sizeMax: 0.680, wgtMin: 4.500, wgtMax: 7.000, petId: '344' },
+  { id: 151, name: '皇室狼',      emoji: '🐺', sizeMin: 0.650, sizeMax: 0.900, wgtMin: 10.000, wgtMax: 15.000, petId: '131' },
+  { id: 152, name: '瞌睡王',      emoji: '😴', sizeMin: 0.650, sizeMax: 0.900, wgtMin: 9.000, wgtMax: 13.000, petId: '075' },
+  { id: 153, name: '石冠王蜥',      emoji: '🦎', sizeMin: 0.600, sizeMax: 0.850, wgtMin: 8.000, wgtMax: 12.000, petId: '026' },
+  { id: 154, name: '石石',      emoji: '🪨', sizeMin: 0.120, sizeMax: 0.420, wgtMin: 21.405, wgtMax: 32.478, petId: '111' },
+  { id: 155, name: '石肤蜥',      emoji: '🦎', sizeMin: 0.210, sizeMax: 0.290, wgtMin: 7.455, wgtMax: 13.600, petId: '024' },
+  { id: 156, name: '绅士鸡',      emoji: '🐓', sizeMin: 0.480, sizeMax: 0.680, wgtMin: 4.000, wgtMax: 6.500, petId: '268' },
+  { id: 157, name: '绒绒',      emoji: '🐑', sizeMin: 0.116, sizeMax: 0.150, wgtMin: 0.400, wgtMax: 1.000, petId: '307' },
+  { id: 158, name: '精灵多西',      emoji: '🐕', sizeMin: 0.550, sizeMax: 0.800, wgtMin: 6.000, wgtMax: 9.000, petId: '223' },
+  { id: 159, name: '粉粉星',      emoji: '⭐', sizeMin: 0.230, sizeMax: 0.320, wgtMin: 0.759, wgtMax: 1.150, petId: '330' },
+  { id: 160, name: '粉星仔',      emoji: '🌟', sizeMin: 0.170, sizeMax: 0.620, wgtMin: 3.000, wgtMax: 5.200, petId: '335' },
+  { id: 161, name: '精灵',      emoji: '✨', sizeMin: 0.120, sizeMax: 0.720, wgtMin: 0.367, wgtMax: 0.884, petId: '299' },
+  { id: 162, name: '绿耳松鼠',      emoji: '🐿️', sizeMin: 0.188, sizeMax: 0.680, wgtMin: 1.301, wgtMax: 6.000, petId: '049' },
+  { id: 163, name: '绿草精灵',      emoji: '🌿', sizeMin: 0.320, sizeMax: 0.410, wgtMin: 3.415, wgtMax: 4.029, petId: '093' },
+  { id: 164, name: '绿翼鸟',      emoji: '🦜', sizeMin: 0.200, sizeMax: 0.250, wgtMin: 1.200, wgtMax: 1.920, petId: '102' },
+  { id: 165, name: '缇塔',      emoji: '🤖', sizeMin: 0.280, sizeMax: 0.310, wgtMin: 13.081, wgtMax: 17.671, petId: '229' },
+  { id: 166, name: '翠顶夫人',      emoji: '👒', sizeMin: 0.550, sizeMax: 0.800, wgtMin: 6.000, wgtMax: 9.000, petId: '090' },
+  { id: 167, name: '声波缇塔',      emoji: '🎵', sizeMin: 0.310, sizeMax: 0.310, wgtMin: 17.374, wgtMax: 17.374, petId: '230' },
+  { id: 168, name: '胆小鳗鱼',      emoji: '🐍', sizeMin: 0.260, sizeMax: 0.430, wgtMin: 1.219, wgtMax: 10.740, petId: '242' },
+  { id: 169, name: '花衣蝶',      emoji: '🦋', sizeMin: 0.450, sizeMax: 0.650, wgtMin: 3.500, wgtMax: 6.000, petId: '101' },
+  { id: 170, name: '花怨鳗',      emoji: '🐍', sizeMin: 0.250, sizeMax: 0.280, wgtMin: 1.019, wgtMax: 1.590, petId: '201' },
+  { id: 171, name: '蒲公英娃娃',      emoji: '🌼', sizeMin: 0.420, sizeMax: 0.620, wgtMin: 3.000, wgtMax: 5.000, petId: '070' },
+  { id: 172, name: '蒲公英',      emoji: '🌼', sizeMin: 0.130, sizeMax: 0.210, wgtMin: 0.030, wgtMax: 0.118, petId: '069' },
+  { id: 173, name: '菇菇丁',      emoji: '🍄', sizeMin: 0.110, sizeMax: 0.280, wgtMin: 0.386, wgtMax: 1.565, petId: '174' },
+  { id: 174, name: '菊花梨',      emoji: '🍐', sizeMin: 0.270, sizeMax: 0.370, wgtMin: 1.532, wgtMax: 2.320, petId: '079' },
+  { id: 175, name: '萌球球',      emoji: '🧶', sizeMin: 0.150, sizeMax: 0.180, wgtMin: 0.250, wgtMax: 0.650, petId: '355' },
+  { id: 176, name: '萌球',      emoji: '🧶', sizeMin: 0.150, sizeMax: 0.180, wgtMin: 0.250, wgtMax: 0.650, petId: '355' },
+  { id: 177, name: '草头鸭',      emoji: '🦆', sizeMin: 0.210, sizeMax: 0.270, wgtMin: 1.802, wgtMax: 2.357, petId: '179' },
+  { id: 178, name: '荆棘电环',      emoji: '⚡', sizeMin: 0.500, sizeMax: 0.720, wgtMin: 5.000, wgtMax: 7.500, petId: '209' },
+  { id: 179, name: '萌刺菇',      emoji: '🍄', sizeMin: 0.350, sizeMax: 0.480, wgtMin: 6.000, wgtMax: 8.000, petId: '174' },
+  { id: 180, name: '螺旋帕帕',      emoji: '🌀', sizeMin: 0.150, sizeMax: 0.190, wgtMin: 0.812, wgtMax: 1.740, petId: '261' },
+  { id: 181, name: '裘洛',      emoji: '🐱', sizeMin: 0.280, sizeMax: 0.400, wgtMin: 3.000, wgtMax: 5.000, petId: '246' },
+  { id: 182, name: '记忆石',      emoji: '💎', sizeMin: 0.210, sizeMax: 0.850, wgtMin: 27.691, wgtMax: 44.532, petId: '095' },
+  { id: 183, name: '豆丁鱼',      emoji: '🐟', sizeMin: 0.130, sizeMax: 0.180, wgtMin: 0.437, wgtMax: 0.598, petId: '239' },
+  { id: 184, name: '趴趴',      emoji: '🐶', sizeMin: 0.200, sizeMax: 0.380, wgtMin: 6.000, wgtMax: 13.000, petId: '075' },
+  { id: 185, name: '蹦床松鼠',      emoji: '🐿️', sizeMin: 0.470, sizeMax: 0.680, wgtMin: 3.500, wgtMax: 6.000, petId: '051' },
+  { id: 186, name: '蹦蹦种子',      emoji: '🌱', sizeMin: 0.200, sizeMax: 0.280, wgtMin: 1.580, wgtMax: 2.240, petId: '063' },
+  { id: 187, name: '蹦蹦花',      emoji: '🌸', sizeMin: 0.550, sizeMax: 0.750, wgtMin: 5.000, wgtMax: 8.000, petId: '065' },
+  { id: 188, name: '逗逗',      emoji: '🐶', sizeMin: 0.130, sizeMax: 0.170, wgtMin: 0.213, wgtMax: 0.612, petId: '198' },
+  { id: 189, name: '迷迷箱怪',      emoji: '📦', sizeMin: 0.500, sizeMax: 0.720, wgtMin: 5.000, wgtMax: 7.500, petId: '211' },
+  { id: 190, name: '迷你狮鹫',      emoji: '🦅', sizeMin: 0.310, sizeMax: 0.420, wgtMin: 4.309, wgtMax: 7.373, petId: '165' },
+  { id: 191, name: '逗逗雏',      emoji: '🐣', sizeMin: 0.130, sizeMax: 0.170, wgtMin: 0.213, wgtMax: 0.612, petId: '198' },
+  { id: 192, name: '酷拉',      emoji: '⚡', sizeMin: 0.600, sizeMax: 0.850, wgtMin: 8.000, wgtMax: 12.000, petId: '206' },
+  { id: 193, name: '里拉鳐',      emoji: '🐟', sizeMin: 0.400, sizeMax: 0.800, wgtMin: 13.793, wgtMax: 19.800, petId: '219' },
+  { id: 194, name: '闪电环',      emoji: '⚡', sizeMin: 0.160, sizeMax: 0.190, wgtMin: 0.847, wgtMax: 1.313, petId: '207' },
+  { id: 195, name: '锤头鹳',      emoji: '🦢', sizeMin: 0.460, sizeMax: 0.800, wgtMin: 17.980, wgtMax: 26.321, petId: '092' },
+  { id: 196, name: '雪灵',      emoji: '❄️', sizeMin: 0.450, sizeMax: 0.650, wgtMin: 3.500, wgtMax: 6.000, petId: '141' },
+  { id: 197, name: '雪娃娃',      emoji: '⛄', sizeMin: 0.120, sizeMax: 0.210, wgtMin: 2.411, wgtMax: 3.223, petId: '139' },
+  { id: 198, name: '雪巨人',      emoji: '⛄', sizeMin: 0.700, sizeMax: 0.950, wgtMin: 12.000, wgtMax: 18.000, petId: '136' },
+  { id: 199, name: '雪影娃娃',      emoji: '🧊', sizeMin: 0.580, sizeMax: 0.820, wgtMin: 7.000, wgtMax: 10.000, petId: '144' },
+  { id: 200, name: '雪绒鸟',      emoji: '❄️', sizeMin: 0.170, sizeMax: 0.210, wgtMin: 1.127, wgtMax: 1.789, petId: '018' },
+  { id: 201, name: '音速犬',      emoji: '🐕', sizeMin: 0.580, sizeMax: 0.820, wgtMin: 7.000, wgtMax: 10.000, petId: '048' },
+  { id: 202, name: '灵狐',      emoji: '🦊', sizeMin: 0.240, sizeMax: 0.520, wgtMin: 2.600, wgtMax: 5.500, petId: '147' },
+  { id: 203, name: '魔草巫灵',      emoji: '🧙', sizeMin: 0.550, sizeMax: 0.800, wgtMin: 6.000, wgtMax: 9.000, petId: '094' },
+  { id: 204, name: '魔眷鸟',      emoji: '🦉', sizeMin: 0.500, sizeMax: 0.720, wgtMin: 5.000, wgtMax: 7.500, petId: '104' },
+  { id: 205, name: '鳗尾兽',      emoji: '🐍', sizeMin: 0.550, sizeMax: 0.800, wgtMin: 6.000, wgtMax: 9.000, petId: '202' },
+  { id: 206, name: '鸭吉吉',      emoji: '🦆', sizeMin: 0.260, sizeMax: 0.550, wgtMin: 5.319, wgtMax: 7.196, petId: '011' },
+  { id: 207, name: '黑羽夫人',      emoji: '🖤', sizeMin: 0.580, sizeMax: 0.820, wgtMin: 7.000, wgtMax: 10.000, petId: '091' },
+  { id: 208, name: '龙鱼',      emoji: '🐉', sizeMin: 0.600, sizeMax: 0.850, wgtMin: 8.000, wgtMax: 12.000, petId: '241' },
+  { id: 209, name: '罗隐',      emoji: '👻', sizeMin: 0.260, sizeMax: 0.950, wgtMin: 12.000, wgtMax: 18.000, petId: '107' },
+  { id: 210, name: '空空颅',      emoji: '💀', sizeMin: 0.172, sizeMax: 0.244, wgtMin: 2.240, wgtMax: 3.480, petId: '327' },
+  { id: 211, name: '阿布',      emoji: '🐣', sizeMin: 0.200, sizeMax: 0.500, wgtMin: 0.500, wgtMax: 1.800, petId: '107' },
+  { id: 212, name: '阿米亚特',      emoji: '🪨', sizeMin: 0.240, sizeMax: 0.320, wgtMin: 13.802, wgtMax: 18.659, petId: '105' },
+  { id: 213, name: '雪豆丁',      emoji: '❄️', sizeMin: 0.344, sizeMax: 0.510, wgtMin: 3.516, wgtMax: 5.000, petId: '134' },
+  { id: 214, name: '电动长颈鹿',      emoji: '🦒', sizeMin: 0.300, sizeMax: 0.420, wgtMin: 10.580, wgtMax: 17.720, petId: '226' },
+  { id: 215, name: '高脚鹬',      emoji: '🦢', sizeMin: 0.500, sizeMax: 0.720, wgtMin: 5.000, wgtMax: 7.500, petId: '233' },
+  { id: 216, name: '锥尾羊',      emoji: '🐑', sizeMin: 0.250, sizeMax: 0.330, wgtMin: 4.932, wgtMax: 6.384, petId: '015' },
+  { id: 217, name: '风铃鲨',      emoji: '🦈', sizeMin: 0.170, sizeMax: 0.240, wgtMin: 4.697, wgtMax: 6.646, petId: '108' },
+  { id: 218, name: '矿晶虫',      emoji: '🪲', sizeMin: 0.230, sizeMax: 0.320, wgtMin: 2.066, wgtMax: 2.485, petId: '039' },
+  { id: 219, name: '立方人',      emoji: '🧊', sizeMin: 0.600, sizeMax: 0.850, wgtMin: 12.000, wgtMax: 16.000, petId: '265' },
+  { id: 220, name: '翡翠水母',      emoji: '🪼', sizeMin: 0.196, sizeMax: 0.290, wgtMin: 11.189, wgtMax: 14.720, petId: '244' },
+  { id: 221, name: '贝瑟',      emoji: '🐚', sizeMin: 0.228, sizeMax: 0.328, wgtMin: 8.964, wgtMax: 13.840, petId: '332' },
+  { id: 222, name: '甜田螺',      emoji: '🐌', sizeMin: 0.164, sizeMax: 0.232, wgtMin: 2.724, wgtMax: 3.760, petId: '185' },
+  { id: 223, name: '皇家狮鹫',      emoji: '🦅', sizeMin: 0.600, sizeMax: 0.850, wgtMin: 8.000, wgtMax: 12.000, petId: '167' },
+  { id: 224, name: '石王',      emoji: '🪨', sizeMin: 0.700, sizeMax: 0.950, wgtMin: 14.000, wgtMax: 20.000, petId: '029' },
+  { id: 225, name: '翼龙',      emoji: '🦕', sizeMin: 0.700, sizeMax: 0.950, wgtMin: 10.000, wgtMax: 15.000, petId: '225' },
+];
+
+const REFERENCE_PETS = [
+  { name: '喵喵',     emoji: '🐱', sizeMin: 0.40, sizeMax: 0.60, wgtMin: 3.00, wgtMax: 5.00 },
+  { name: '水蓝蓝',   emoji: '💧', sizeMin: 0.20, sizeMax: 0.20, wgtMin: 1.06, wgtMax: 1.07 },
+  { name: '波波螺',   emoji: '🐚', sizeMin: 0.14, sizeMax: 0.17, wgtMin: 1.72, wgtMax: 2.26 },
+  { name: '火花',     emoji: '🔥', sizeMin: 0.23, sizeMax: 0.29, wgtMin: 2.66, wgtMax: 3.40 },
+  { name: '迪莫',     emoji: '🐉', sizeMin: 0.23, sizeMax: 0.32, wgtMin: 1.93, wgtMax: 2.80 },
+  { name: '小翼龙',   emoji: '🦎', sizeMin: 0.32, sizeMax: 0.35, wgtMin: 12.15, wgtMax: 14.60 },
+  { name: '雪豆丁',   emoji: '❄️', sizeMin: 0.34, sizeMax: 0.51, wgtMin: 3.52, wgtMax: 5.00 },
+  { name: '罗隐',     emoji: '👻', sizeMin: 0.26, sizeMax: 0.95, wgtMin: 12.00, wgtMax: 18.00 },
+  { name: '阿布',     emoji: '🐣', sizeMin: 0.20, sizeMax: 0.50, wgtMin: 0.50, wgtMax: 1.80 },
+  { name: '小独角兽', emoji: '🦄', sizeMin: 0.42, sizeMax: 0.59, wgtMin: 14.59, wgtMax: 22.23 },
+  { name: '雪影娃娃', emoji: '🧊', sizeMin: 0.58, sizeMax: 0.82, wgtMin: 7.00, wgtMax: 10.00 },
+  { name: '月牙雪熊', emoji: '🐻', sizeMin: 0.53, sizeMax: 0.85, wgtMin: 27.69, wgtMax: 37.00 },
+];
+
+const FAQ_DATA = [
+  {
+    q: '洛克王国孵蛋查询是怎么工作的？',
+    a: '先把官方 500+ 精灵的内嵌数据整理成数据库，记录每只精灵可能的蛋体直径和重量区间；再把你输入的蛋体尺寸（米）和重量（千克）与所有候选精灵的参数区间实时比对，据此计算每只精灵的显形概率，并从高到低排序返回前 10 位候选。整个过程在浏览器端完成，无需服务器。'
+  },
+  {
+    q: '怎么测量我手上蛋的尺寸和重量？',
+    a: '在洛克王国游戏的蛋详情面板里，每颗蛋都会标注它的直径（米）和重量（千克）。把数值原样填进上方的「蛋体尺寸」和「蛋体重量」输入框即可，小数点后两位就已经足够精确。'
+  },
+  {
+    q: '为什么同一个尺寸和重量会给出多只精灵？',
+    a: '同一蛋组的精灵共享相近的蛋外形参数，因此仅凭尺寸和重量往往会有多只候选。灵蛋所的孵蛋查询会按概率从高到低排序，让你一眼看到最可能孵化的那只，同时列出前 10 位备选，方便你结合属性进一步排除。'
+  },
+  {
+    q: '结果里的「崖间地的样子」「高山地的样子」是什么意思？',
+    a: '那是洛克王国精灵的形态后缀（form）。部分精灵在不同地形下会呈现不同形态，例如小狮鹫就有「崖间地的样子」和「高山地的样子」两种。蛋体参数命中哪个形态，查询工具就会直接把对应形态列出来，不会和默认形态混淆。'
+  },
+  {
+    q: '可以查询异色精灵吗？',
+    a: '可以。结果列表里会单独标注精灵的异色显示名（例如「火红尾异色」），帮助训练家在孵化过程中提前识别异色蛋的典型参数区间，不错过任何一只稀有异色。'
+  },
+  {
+    q: '数据多久更新一次，会和游戏保持同步吗？',
+    a: '孵蛋查询工具读取的是内嵌的洛克王国精灵数据文件，随每次更新发布。官方推出新精灵或调整蛋体参数后，只需更新数据并重新发布，查询结果就会立即反映最新状态。'
+  },
+  {
+    q: '为什么工具要求蛋体重量以千克为单位，而不是克？',
+    a: '为了和洛克王国游戏内的显示保持一致——蛋详情面板里，重量直接以千克（kg）标注。如果你误把克当作输入（例如 6250 克被直接填入），查询结果会完全失准。同样，尺寸必须是米（m），不要填厘米。'
+  },
+  {
+    q: '异色精灵的蛋体参数和普通版有区别吗？',
+    a: '没有区别。异色（Shiny）只是精灵的外观变体，蛋体尺寸和重量区间和普通版共享同一套参数。查询器在匹配到某只精灵时，如果该精灵存在对应异色形态，会在结果列表里单独把异色显示名列出来供参考；但它出现的概率仍然遵循官方的异色触发规则。'
+  },
+  {
+    q: '查询结果和实际孵化出来的精灵有差异怎么办？',
+    a: '常见原因有三种：其一，输入数值单位错了，请对照上方的 FAQ 再确认一次；其二，对应精灵的蛋体参数在近期版本中被官方微调，而内嵌数据文件还没同步；其三，你手里的蛋属于一只最新加入游戏、尚未进入数据库的精灵。如果输入没问题并且差异复现，欢迎前往反馈通道提交具体的 size / weight / 预期精灵，我们会在下次数据同步时一并勘误。'
+  }
+];
+
+// =============================================
+// CORE: 查询引擎
+// =============================================
+function query(size, weight) {
+  const scored = PET_DB.map(pet => {
+    const fitsSize = size >= pet.sizeMin && size <= pet.sizeMax;
+    const fitsWeight = weight >= pet.wgtMin && weight <= pet.wgtMax;
+    // 硬过滤：任一维度越界 = 0 分
+    if (!fitsSize || !fitsWeight) return { ...pet, score: 0, prob: 0 };
+
+    // 计算匹配度：区间中心越近分越高
+    const sizeCenter = (pet.sizeMin + pet.sizeMax) / 2;
+    const wgtCenter = (pet.wgtMin + pet.wgtMax) / 2;
+    const sizeRange = pet.sizeMax - pet.sizeMin || 0.01;
+    const wgtRange = pet.wgtMax - pet.wgtMin || 0.01;
+
+    const sizeDist = Math.abs(size - sizeCenter) / sizeRange;
+    const wgtDist = Math.abs(weight - wgtCenter) / wgtRange;
+
+    // 综合得分：距离越近分越高，权重尺寸:重量 = 1:1
+    const score = Math.max(0, 1 - (sizeDist * 0.5 + wgtDist * 0.5));
+    return { ...pet, score };
+  });
+
+  // 过滤掉 0 分的
+  const valid = scored.filter(p => p.score > 0);
+  // 按得分排序
+  valid.sort((a, b) => b.score - a.score);
+
+  const totalScore = valid.reduce((s, p) => s + p.score, 0) || 1;
+  const top = valid.slice(0, 10).map((p, i) => ({
+    ...p,
+    prob: totalScore > 0 ? (p.score / totalScore * 100) : 0,
+    rank: i + 1
+  }));
+
+  return top;
+}
+
+// =============================================
+// RENDER: 结果卡片
+// =============================================
+function renderResults(results) {
+  const grid = document.getElementById('resultsGrid');
+  if (!results || results.length === 0) {
+    grid.innerHTML = `
+      <div class="result-empty">
+        <div class="empty-icon">🥚</div>
+        <p>未匹配到任何精灵 · 请检查尺寸和重量是否准确</p>
+      </div>`;
+    return;
+  }
+  document.getElementById('totalCount').textContent = results.length;
+
+  grid.innerHTML = results.map((p, i) => {
+    const rankClass = i < 3 ? `top-${i+1}` : '';
+    const hasShiny = p.tags && p.tags.includes('异色可遇');
+    const hasSame = p.tags && p.tags.includes('同乘');
+    const isRare = p.tags && (p.tags.includes('稀有') || p.tags.includes('极稀有'));
+
+    return `
+      <div class="result-card ${rankClass} reveal" style="transition-delay:${i*0.08}s">
+        <div class="rc-rank">${String(p.rank).padStart(2,'0')}</div>
+        <div class="rc-visual">${p.emoji || '🥚'}</div>
+        <div class="rc-name">${p.name}</div>
+        <div class="rc-meta">
+          ${isRare ? '<span class="rc-tag rc-tag-rare">✦ 稀有</span>' : ''}
+          ${hasShiny ? '<span class="rc-tag rc-tag-shiny">✦ 异色可遇</span>' : ''}
+          ${hasSame ? '<span class="rc-tag rc-tag-same">⇄ 同乘</span>' : ''}
+        </div>
+        <div class="rc-stats">
+          <div class="rc-stat">
+            <div class="rc-stat-label">尺寸区间</div>
+            <div class="rc-stat-value">${p.sizeMin.toFixed(2)} — ${p.sizeMax.toFixed(2)} m</div>
+          </div>
+          <div class="rc-stat">
+            <div class="rc-stat-label">重量区间</div>
+            <div class="rc-stat-value">${p.wgtMin.toFixed(2)} — ${p.wgtMax.toFixed(2)} kg</div>
+          </div>
+        </div>
+        <div class="rc-probability">
+          <div class="rc-prob-bar">
+            <div class="rc-prob-fill" style="width:${p.prob}%"></div>
+          </div>
+          <span class="rc-prob-text">${p.prob.toFixed(1)}%</span>
+        </div>
+        ${hasShiny ? `<div class="rc-shiny-note">✦ 该精灵存在异色形态 · 孵化有概率触发</div>` : ''}
+      </div>
+    `;
+  }).join('');
+
+  // Trigger reveal animation
+  setTimeout(() => {
+    document.querySelectorAll('#resultsGrid .reveal').forEach(el => el.classList.add('visible'));
+  }, 50);
+}
+
+// =============================================
+// RENDER: 参考表
+// =============================================
+function renderReferenceTable() {
+  const tbody = document.getElementById('refTableBody');
+  tbody.innerHTML = REFERENCE_PETS.map(p => {
+    const midSize = ((p.sizeMin + p.sizeMax) / 2).toFixed(2);
+    const midWgt = ((p.wgtMin + p.wgtMax) / 2).toFixed(2);
+    return `
+      <tr>
+        <td><span class="ref-name">${p.emoji} ${p.name}</span></td>
+        <td class="ref-size">${p.sizeMin.toFixed(2)} — ${p.sizeMax.toFixed(2)}</td>
+        <td class="ref-weight">${p.wgtMin.toFixed(2)} — ${p.wgtMax.toFixed(2)}</td>
+        <td><button class="ref-action" data-size="${midSize}" data-weight="${midWgt}">✦ 孵蛋</button></td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// =============================================
+// RENDER: FAQ
+// =============================================
+function renderFAQ() {
+  const list = document.getElementById('faqList');
+  list.innerHTML = FAQ_DATA.map((item, i) => `
+    <div class="faq-item" data-index="${i}">
+      <div class="faq-q">
+        <span>${item.q}</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">
+        <p>${item.a}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+// =============================================
+// TOAST
+// =============================================
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// =============================================
+// EVENT BINDINGS
+// =============================================
+document.addEventListener('DOMContentLoaded', () => {
+  renderReferenceTable();
+  renderFAQ();
+
+  // — 快捷模板按钮 —
+  document.querySelectorAll('.template-btn, .hot-egg-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const size = parseFloat(btn.dataset.size);
+      const weight = parseFloat(btn.dataset.weight);
+      document.getElementById('sizeInput').value = size;
+      document.getElementById('weightInput').value = weight;
+      // Auto query
+      doQuery(size, weight);
+    });
+  });
+
+  // — 参考表孵蛋按钮 —
+  document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('ref-action')) {
+      const size = parseFloat(e.target.dataset.size);
+      const weight = parseFloat(e.target.dataset.weight);
+      document.getElementById('sizeInput').value = size;
+      document.getElementById('weightInput').value = weight;
+      doQuery(size, weight);
+      document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+
+  // — 查询按钮 —
+  document.getElementById('queryBtn').addEventListener('click', () => {
+    const size = parseFloat(document.getElementById('sizeInput').value);
+    const weight = parseFloat(document.getElementById('weightInput').value);
+    if (!size || !weight || size <= 0 || weight <= 0) {
+      showToast('请输入有效的尺寸和重量数值');
+      return;
+    }
+    showToast('✦ 正在推算中…');
+    setTimeout(() => {
+      doQuery(size, weight);
+      // 更新 URL template
+      document.querySelectorAll('.template-btn').forEach(b => {
+        b.classList.toggle('active',
+          Math.abs(parseFloat(b.dataset.size) - size) < 0.005 &&
+          Math.abs(parseFloat(b.dataset.weight) - weight) < 0.005
+        );
+      });
+      document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+    }, 400);
+  });
+
+  // — 重置按钮 —
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    document.getElementById('sizeInput').value = '';
+    document.getElementById('weightInput').value = '';
+    document.querySelectorAll('.template-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('resultsGrid').innerHTML = `
+      <div class="result-empty">
+        <div class="empty-icon">🥚</div>
+        <p>输入蛋体数据并点击「开始孵蛋查询」<br>或选择一个快捷模板</p>
+      </div>`;
+  });
+
+  // — FAQ accordion —
+  document.getElementById('faqList').addEventListener('click', (e) => {
+    const item = e.target.closest('.faq-item');
+    if (!item) return;
+    item.classList.toggle('open');
+  });
+
+  // — Feedback form —
+  document.getElementById('feedbackForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const msg = document.getElementById('fbMessage').value.trim();
+    if (!msg) {
+      showToast('请填写留言内容');
+      return;
+    }
+    showToast('✦ 感谢你的反馈！我们已收到');
+    document.getElementById('feedbackForm').reset();
+  });
+
+  // — Enter key triggers query —
+  document.getElementById('sizeInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('queryBtn').click();
+  });
+  document.getElementById('weightInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('queryBtn').click();
+  });
+
+  // — Initial state: wait for user input —
+});
+
+// =============================================
+// CORE: doQuery
+// =============================================
+function doQuery(size, weight) {
+  const results = query(size, weight);
+  renderResults(results);
+}
+
+// =============================================
+// GOLDEN SPARKLE CANVAS
+// =============================================
+(function initSparkles() {
+  const canvas = document.getElementById('sparkleCanvas');
+  const ctx = canvas.getContext('2d');
+  let w, h, particles = [];
+  const COUNT = 60;
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  class Sparkle {
+    constructor() {
+      this.reset();
+    }
+    reset() {
+      this.x = Math.random() * w;
+      this.y = Math.random() * h;
+      this.size = Math.random() * 2 + 0.5;
+      this.speedY = -Math.random() * 0.3 - 0.1;
+      this.speedX = (Math.random() - 0.5) * 0.15;
+      this.opacity = Math.random() * 0.5 + 0.2;
+      this.pulse = Math.random() * Math.PI * 2;
+      this.pulseSpeed = Math.random() * 0.02 + 0.01;
+    }
+    update(mouseX, mouseY) {
+      this.pulse += this.pulseSpeed;
+      // Proximity glow
+      let glow = 1;
+      if (mouseX > 0 && mouseY > 0) {
+        const dx = this.x - mouseX;
+        const dy = this.y - mouseY;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        glow = 1 + Math.max(0, 1 - dist/200) * 2;
+      }
+      this.currentOpacity = (Math.sin(this.pulse) * 0.3 + 0.7) * this.opacity * glow;
+      this.y += this.speedY;
+      this.x += this.speedX;
+      if (this.y < -10 || this.x < -10 || this.x > w + 10) this.reset();
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(240, 215, 140, ${this.currentOpacity})`;
+      ctx.fill();
+      // Glow
+      if (this.currentOpacity > 0.4) {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size * 3, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(240, 215, 140, ${this.currentOpacity * 0.15})`;
+        ctx.fill();
+      }
+    }
+  }
+
+  for (let i = 0; i < COUNT; i++) particles.push(new Sparkle());
+
+  let mouseX = -1, mouseY = -1;
+  document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+
+  function animate() {
+    ctx.clearRect(0, 0, w, h);
+    particles.forEach(p => {
+      p.update(mouseX, mouseY);
+      p.draw();
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
+// =============================================
+// MOUSE PARALLAX — GOLD ORBS
+// =============================================
+document.addEventListener('mousemove', (e) => {
+  const x = e.clientX / window.innerWidth;
+  const y = e.clientY / window.innerHeight;
+  document.getElementById('orb1').style.setProperty('--mx', `${(x - 0.5) * -20}px`);
+  document.getElementById('orb1').style.setProperty('--my', `${(y - 0.5) * -20}px`);
+  document.getElementById('orb2').style.setProperty('--mx2', `${(x - 0.5) * 15}px`);
+  document.getElementById('orb2').style.setProperty('--my2', `${(y - 0.5) * 15}px`);
+});
+
+// =============================================
+// SCROLL REVEAL
+// =============================================
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// =============================================
+// SCROLL PROGRESS
+// =============================================
+window.addEventListener('scroll', () => {
+  const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+  const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+  document.getElementById('scrollProgress').style.width = Math.min(progress, 100) + '%';
+});
+</script>
+</body>
+</html>
