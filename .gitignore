@@ -1,0 +1,23 @@
+# Dependencies & build
+__pycache__/
+.idea/
+.reasonix/
+*.pyc
+node_modules/
+
+# Temp files from scraping
+temp.js
+final.json
+next.json
+pets_data.json
+pets_db_replace.txt
+
+# Other project files
+001/
+finger-counter/
+*.docx
+*.md
+main.py
+modify_template.py
+冥焰引.py
+冥焰引_网页版.py
